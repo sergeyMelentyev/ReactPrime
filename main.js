@@ -1,37 +1,34 @@
-"use strict";
-var items = [ "Salmon", "Pine Nuts", "Yellow Squash" ];
-
-// CreateClass Components
-{
-   const ingredients = React.createClass({
-       displayName: "htmlTagName",
-       objMethodName(item, i) {
-           return React.createElement("li", {key: i}, item);
-       },
-       render() {
-           return React.createElement("ul", {className: "anyClassName"},
-               this.props.name.map(this.objMethodName));   // get access to obj props
-       }
-   });
-   const list = React.createElement(ingredients, {name: items}, null); // pass props to child
-   ReactDOM.render(list, document.getElementById("react-createClass"));
+function ReactDOM() {
+    //
 }
-// Class Components
-{
-   class Ingredient extends React.Component {
-       objMethodName(item, i) {
-           return React.createElement("li", {key: i}, item);
-       }
-       render() {
-           return React.createElement("ul", {className: "anyClassName"},
-               this.props.name.map(this.objMethodName));
-       }
-   }
-   const ingredient = new Ingredient();
-   const newList = React.createElement(ingredient, {name: items}, null);
-   ReactDOM.render(newList, document.getElementById("react-component"));
+function jsxAttr() {
+    // use quotes for string vals or curly braces for expressions
+    const element = <div tabIndex="0">
+    const element = <img src={user.avatarUrl}>
 }
-// Stateless Functional Components
-{
-    
+function element() {
+    const elem = React.createElement('p', {"className": "name"}, "pass children to render")
+    ReactDOM.render(elem, document.getElementById("root"));
+}
+function ClassComponent() {
+    class ClassComponent extends React.Component {
+        render() {
+            return <h1>Hello, {this.props.name}
+        }
+    }
+    const elem = <ClassComponent name="Sergey" />
+    ReactDOM.render(elem, document.getElementById("root"))
+}
+function FunctionalComponent() {
+    function FunctionalComponent(props) {
+        return <li>Hello, {props.name}
+    }
+    function App() {
+        return (
+            <ul>
+                <FunctionalComponent name="Sergey"/>
+                <FunctionalComponent name="Olga"/>
+        )
+    }
+    ReactDOM.render(<App />, document.getElementById("root"))
 }
