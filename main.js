@@ -99,3 +99,31 @@ function FunctionalComponent() {
     }
     ReactDOM.render(<App />, document.getElementById("root"))
     }
+function evets() {
+    class ClassComponent extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = {isToggleOn: true}
+            this.handleClickWithBind = this.handleClickWithBind.bind(this)
+        }
+
+        handleClickWithBind(e) { e.preventDefault() }
+
+        handleClickWIthArrowFunc = (e) => {
+            this.setState(prevState => ({
+                isToggleOn: !prevState.isToggleOn
+            }))
+        }
+
+        render() {
+            return (
+                <div>
+                    <button onClick={this.handleClickWithBind}>
+                    <button onClick={this.handleClickWIthArrowFunc}>
+                        {this.state.isToggleOn ? "ON" : "OFF"}
+                    <button onClick={(e) => this.deleteRow(id, e)}>
+                    <button onClick={this.deleteRow.bind(this, id)}>
+            )
+        }
+    }
+    }
