@@ -4,16 +4,17 @@ function jsxAttr() {
     const element = <img src={user.avatarUrl}>
     }
 function element() {
-    const elem = React.createElement('p', {"className": "name"}, "pass children to render")
-    // the same as
-    const elem = <p className="name">"pass children to render"<p>
-    ReactDOM.render(elem, document.getElementById("root"));
+    const elem = React.createElement("div", {"className": "name"},
+        React.createElement("p", null, "Hello, World"))
+    const elem = <p className="name">"pass children to render"<p>   // the same as above
+
+    ReactDOM.render(elem, document.getElementById("root"))
     }
 function lifeCycle() {
     componentDidMount() {...}       // after component output has been rendered to the DOM
     componentWillUnmount() {...}    //
     }
-function ClassComponent() {
+function classComponent() {
     // CLASS COMPONENT WITH PROPS
     class ClassComponent extends React.Component {
         render() {
@@ -86,7 +87,7 @@ function ClassComponent() {
         }
     }
     }
-function FunctionalComponent() {
+function functionalComponent() {
     function FunctionalComponent(props) {
         return <li>Hello, {props.name}
     }
@@ -99,7 +100,7 @@ function FunctionalComponent() {
     }
     ReactDOM.render(<App />, document.getElementById("root"))
     }
-function evets() {
+function events() {
     class ClassComponent extends React.Component {
         constructor(props) {
             super(props)
@@ -107,7 +108,9 @@ function evets() {
             this.handleClickWithBind = this.handleClickWithBind.bind(this)
         }
 
-        handleClickWithBind(e) { e.preventDefault() }
+        handleClickWithBind(e) {
+            e.preventDefault()
+        }
 
         handleClickWIthArrowFunc = (e) => {
             this.setState(prevState => ({
@@ -127,3 +130,40 @@ function evets() {
         }
     }
     }
+
+function conditionRendering() {
+    function Greeting(props) {
+        if (props.isLoggedIn) return <h1>Hello, User
+        return <h1>Hello, Guest
+    }
+    function LoginButton(props) {
+        return <button onClick={props.onClick}>LogIn
+    }
+    function LogoutButton(props) {
+        return <button onClick={props.onClick}>LogOut
+    }
+    class LoginControl extends React.Component {
+        constructor(props) {
+            super(props)
+            this.handleLoginClick = this.handleLoginClick.bind(this)
+            this.handleLogoutClick = this.handleLogoutClick.bind(this)
+            this.state = {"isLoggedIn": false}
+        }
+        handleLoginClick() { this.setState({"isLoggedIn": true}) }
+        handleLogoutClick() { this.setState({"isLoggedIn": false}) }
+
+        render() {
+            let button = undefined
+            if (this.state.isLoggedIn)
+                button = <LogoutButton onClick={this.handleLogoutClick}>
+            else
+                button = <LoginButton onClick={this.handleLoginClick}>
+            return (
+                <div>
+                    <Greeting isLoggedIn={this.state.isLoggedIn}>
+                    {button}
+            )
+        }
+    }
+    ReactDOM.render(<LoginControl />, document.getElementById("root"))
+}
