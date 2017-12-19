@@ -1,7 +1,39 @@
-function jsxAttr() {
+function jsx() {
     // use quotes for string vals or curly braces for expressions
     const element = <div tabIndex="0">
     const element = <img src={user.avatarUrl}>
+    
+    // embeded expressions
+    <h1>Hello!
+      {
+        unreadMessages.length > 0 &&
+        <h2> You have {unreadMessages.length} unread messages.
+      }
+    <h1>
+
+    // inline ternary operator
+    <div>
+      The user is {isLoggedIn ? "currently" : "not"} logged in.
+    <div>
+    <div>
+      {
+        isLoggedIn ? ( 
+            <LogoutButton onClick={this.handleLogoutClick} >
+        ) : (
+            <LoginButton onClick={this.handleLoginClick} >
+        )
+      }
+    <div>
+
+    // embeded map
+    function NumberList(props) {
+      const numbers = props.numbers
+      return (
+        <ul>
+          {numbers.map((number) => <ListItem key={number.toString()} value={number} > )}
+        <ul>
+      )
+    }
     }
 function element() {
     const elem = React.createElement("div", {"className": "name"},
@@ -130,7 +162,6 @@ function events() {
         }
     }
     }
-
 function conditionRendering() {
     function Greeting(props) {
         if (props.isLoggedIn) return <h1>Hello, User
@@ -155,7 +186,7 @@ function conditionRendering() {
         render() {
             let button = undefined
             if (this.state.isLoggedIn)
-                button = <LogoutButton onClick={this.handleLogoutClick}>
+                button = React.createElement(LogoutButton, {onClick: this.handleLogoutClick}, null)
             else
                 button = <LoginButton onClick={this.handleLoginClick}>
             return (
@@ -166,4 +197,30 @@ function conditionRendering() {
         }
     }
     ReactDOM.render(<LoginControl />, document.getElementById("root"))
-}
+
+    // prevent component from rendering by returning null, but componentWillUpdate() and componentDidUpdate() will fire!
+    function WarningBanner(props) {
+        if (!props.warn) return null
+        return (
+            <div className="warning">
+              Warning!
+            <div>
+            )
+    }
+    }
+function listRendering() {
+    // without component
+    const numbers = [1,2,3,4,5]
+    const listItemsFirst = numbers.map((item,key) => React.createElement("li", {key: key}, item))
+    const listItemsSecond = numbers.map((item,key) => <li key={key}>{item}<li>)     // the same as above
+    ReactDOM.render(React.createElement("ul", null, listItemsFirst), document.getElementById("root"))
+    ReactDOM.render(<ul>{listItemsSecond}<ul>, document.getElementById("root"))     // the same as above
+
+    // stateless functional component
+    function CreateNumbers(props) {
+        const listNumbers = props.numbers.map((number, index) => <li key={index}>{number}<li>)
+        return (<ul>{listNumbers}<ul>)
+    }
+    const numbers = [1,2,3,4,5]
+    ReactDOM.render(<CreateNumbers numbers={numbers}>, document.getElementById("root"))
+    }
