@@ -304,3 +304,49 @@ function form() {
         }
     }
     }
+
+function router() {
+    // index.js file
+    import React from "react"
+    import { render } from "react-dom"
+    import { BrowserRouter, Route } from "react-router-dom"
+    import Landing from "./second"
+    import Search from "./third"
+    const App = () => (
+        <BrowserRouter>
+            <div>
+                <Route exact path="/" component={Landing}>
+                <Route path="/search" component={Search}>
+    )
+    render(<App />, document.getElementById("root"))
+
+    // second.js
+    import React from "react"
+    import { Link } from "react-router-dom"
+    const Landing = () => (
+        <div>
+            <h1>Search for video
+            <input type="text" placeholder="search" />
+            <Link to="/search">show all<Link>
+    )
+    export default Landing
+
+    // third.js
+    import React from "react"
+    const Search = () => (
+        <div>
+            Search component
+    )
+    export default Search
+
+    // switch component will render exactly one component
+    import { BrowserRouter, Route, Switch } from "react-router-dom"
+    const App = () => (
+        <BrowserRouter>
+            <div>
+                <Switch>
+                    <Route exact path="/" component={Landing}>
+                    <Route path="/search" component={Search}>
+                    <Route component={FallBack404Component}>
+    )
+    }
