@@ -1,9 +1,13 @@
 function jsx() {
+    // jsx will be compiled to React.createElement method
+    const list = numbers.map(item => React.createElement("li", {key: item.id}, item))
+    const list = numbers.map(item => <li key={item.id}>{item}<li>)
+
     // use quotes for string vals or curly braces for expressions
     const element = <div tabIndex="0">
     const element = <img src={user.avatarUrl}>
     
-    // embeded expressions
+    // embeded JS expressions
     <h1>Hello!
       {
         unreadMessages.length > 0 &&
@@ -27,10 +31,9 @@ function jsx() {
 
     // embeded map
     function NumberList(props) {
-      const numbers = props.numbers
       return (
         <ul>
-          {numbers.map((number) => <ListItem key={number.toString()} value={number} > )}
+          {props.numbers.map(number => <ListItem key={number.toString()} value={number} > )}
         <ul>
       )
     }
@@ -132,7 +135,7 @@ function functionalComponent() {
     }
     ReactDOM.render(<App />, document.getElementById("root"))
     }
-function events() {
+function event() {
     class ClassComponent extends React.Component {
         constructor(props) {
             super(props)
@@ -223,4 +226,81 @@ function listRendering() {
     }
     const numbers = [1,2,3,4,5]
     ReactDOM.render(<CreateNumbers numbers={numbers}>, document.getElementById("root"))
+    }
+function form() {
+    // submit, textarea and select handler
+    class NameForm extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = {"value": "coconut"}
+            this.handleChange = this.handleChange.bind(this)
+            this.handleSubmit = this.handleSubmit.bind(this)
+        }
+
+        handleChange(event) {
+            this.setState({"value": event.target.value})
+        }
+
+        handleSubmit(event) {
+            event.preventDefault()
+            this.setState({"value": ""})
+        }
+
+        render() {
+            return (
+                <form onSubmit={this.handleSubmit}>
+                    <label>
+                        Name:
+                        <input type="text" value={this.state.value} onChange={this.handleChange}>
+                        <textarea value={this.state.value} onChange={this.handleChange} >
+                        <select value={this.state.value} onChange={this.handleChange}>
+                            <option value="coconut">Coconut<option>
+                            <option value="mango">Mango<option>
+                        <select>
+                        <select multiple={true} value={['B', 'C']}>
+                    <label>
+                    <input type="submit" value="Submit">
+                <form>
+            )
+        }
+    }
+
+    // checkbox and input handler
+    class Reservation extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = { isGoing: true, numberOfGuests: 2 }
+            this.handleInputChange = this.handleInputChange.bind(this)
+        }
+        handleInputChange(event) {
+            const target = event.target
+            const value = target.type === "checkbox" ? target.checked : target.value
+            const name = target.name
+            this.setState({
+                [name]: value
+            })
+        }
+        render() {
+            return (
+                <form>
+                    <label>
+                        Is going:
+                        <input
+                            name="isGoing"
+                            type="checkbox"
+                            checked={this.state.isGoing}
+                            onChange={this.handleInputChange} >
+                    <label>
+                    <label>
+                        Number of guests:
+                        <input
+                            name="numberOfGuests"
+                            type="number"
+                            value={this.state.numberOfGuests}
+                            onChange={this.handleInputChange} >
+                    <label>
+                <form>
+            );
+        }
+    }
     }
