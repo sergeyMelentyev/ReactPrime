@@ -137,6 +137,25 @@ function functionalComponent() {
     ReactDOM.render(<App />, document.getElementById("root"))
     }
 
+function composition() {
+    // the same as slots in vue.js, can contain multiple injection points
+    function FancyBorder(props) {
+      return (
+        <div className={'FancyBorder FancyBorder-' + props.color}>
+          {props.children}
+        <div>
+      )
+    }
+    function WelcomeDialog() {
+      return (
+        <FancyBorder color="blue">
+          <h1 className="Dialog-title"> Welcome <h1>    // will be passed to <FancyBorder> as props.children
+          <p className="Dialog-message"> Welcome <p>    // will be passed to <FancyBorder> as props.children
+        <FancyBorder>
+      )
+    }
+    }
+
 function event() {
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -417,4 +436,4 @@ function state() {
         }
     }
     render(<Calculator />, document.getElementById("root"))
-}
+    }
