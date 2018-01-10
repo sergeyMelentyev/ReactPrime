@@ -1,17 +1,23 @@
 function jsx() {
-    // jsx will be compiled to React.createElement method
+    // JSX type can't be an expression
+    // logic if statements and for loops are not expressions, can’t be used in JSX
+    // if no value is passed for a prop, it defaults to true
+    // JSX will be compiled to React.createElement() method
+    <MyButton color="blue" shadowSize={2}>Click Me<MyButton>
+    React.createElement(MyButton, {color: 'blue', shadowSize: 2}, "Click Me")
+
     const list = numbers.map(item => React.createElement("li", {key: item.id}, item))
     const list = numbers.map(item => <li key={item.id}>{item}<li>)
 
-    // use quotes for string vals or curly braces for expressions
-    const element = <div tabIndex="0">
+    // quotes for string vals or curly braces for expressions
+    const element = <div tabIndex='0'>          // the same as <div tabIndex={'0'}>
+    const element = <div autocomplete />        // the same as <div autocomplete={true} />
     const element = <img src={user.avatarUrl}>
     
     // embeded JS expressions
     <h1>Hello!
       {
-        unreadMessages.length > 0 &&
-        <h2> You have {unreadMessages.length} unread messages.
+        unreadMessages.length > 0 && <h2> You have {unreadMessages.length} unread messages.
       }
     <h1>
 
@@ -35,6 +41,35 @@ function jsx() {
         <ul>
           {props.numbers.map(number => <ListItem key={number.toString()} value={number} > )}
         <ul>
+      )
+    }
+
+    // dot notation
+    const MyComponents = {
+      DatePicker: function DatePicker(props) { return <div> {props.color} <div> }
+    }
+    function BlueDatePicker() {
+      return <MyComponents.DatePicker color="blue" />
+    }
+
+    // spread attributes
+    function App() {
+      const props = {firstName: "Ben", lastName: "Hector"}
+      return <Greeting {...props}>            // the same as <Greeting firstName="Ben" lastName="Hector" />
+    }
+
+    const Button = props => {
+      const { kind, ...other } = props
+      const className = kind === "primary" ? "PrimaryButton" : "SecondaryButton"
+      return <button className={className} {...other} >
+    }
+    const App = () => {
+      return (
+        <div>
+          <Button kind="primary" onClick={() => console.log("clicked!")}>
+            Hello World!
+          <Button>
+        <div>
       )
     }
     }
