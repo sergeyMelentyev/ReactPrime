@@ -1,8 +1,9 @@
 function jsx() {
     // JSX type can't be an expression
-    // logic if statements and for loops are not expressions, can’t be used in JSX
+    // logical if statement and for loop are not expressions, can’t be used in JSX type
     // if no value is passed for a prop, it defaults to true
     // JSX will be compiled to React.createElement() method
+    // content between opening and closing JSX tags is passed as props.children
     <MyButton color="blue" shadowSize={2}>Click Me<MyButton>
     React.createElement(MyButton, {color: 'blue', shadowSize: 2}, "Click Me")
 
@@ -20,6 +21,12 @@ function jsx() {
         unreadMessages.length > 0 && <h2> You have {unreadMessages.length} unread messages.
       }
     <h1>
+
+    // condition render, booleans, null, undefined are ignored (now render)
+    <div>
+      { showHeader && <Header /> }      // component Header will be rendered if showHeader is true
+      <Content />
+    <div>
 
     // inline ternary operator
     <div>
@@ -73,6 +80,7 @@ function jsx() {
       )
     }
     }
+
 function element() {
     const elem = React.createElement("div", {"className": "name"},
         React.createElement("p", null, "Hello, World"))
@@ -472,3 +480,84 @@ function state() {
     }
     render(<Calculator />, document.getElementById("root"))
     }
+
+function ref() {
+    // ref callback receives the underlying DOM element as its argument
+    // invoked before componentDidMount() or componentDidUpdate() lifecycle hooks
+    class CustomTextInput extends React.Component {
+      constructor(props) {
+        super(props)
+        this.focusTextInput = this.focusTextInput.bind(this)
+      }
+      focusTextInput() {
+        this.textInput.focus()
+      }
+      render() {
+        // store reference to input DOM elem in an instance field (this.textInput)
+        return (
+          <div>
+            <input type="text" ref={input => this.textInput = input} >  // will get called twice during updates
+            <input type="button" value="focus" onClick={this.focusTextInput} >
+          <div>
+        )
+      }
+    }
+
+    // functional component
+    function CustomTextInput(props) {
+      let textInput = null                      // must be declared
+      function handleClick() {
+        textInput.focus()
+      }
+      return (
+        <div>
+          <input type="text" ref={input => textInput = input} >
+          <input type="button" value="focus" onClick={handleClick} >
+        <div>
+      ) 
+    }
+
+    // exposing ref to parent component
+    function CustomTextInput(props) {
+      return (
+        <div>
+          <input ref={props.inputRef} >
+        <div>
+      )
+    }
+    class Parent extends React.Component {
+      render() {
+        return (
+          <CustomTextInput inputRef={el => this.inputElement = el} >
+        )
+      }
+    }
+
+    // exposing ref to grand parent component
+    function CustomTextInput(props) {
+      return (
+        <div>
+          <input ref={props.inputRef} >
+        <div>
+      )
+    }
+    function Parent(props) {
+      return (
+        <div>
+          My input: <CustomTextInput inputRef={props.inputRef} >
+        <div>
+      )
+    }
+    class Grandparent extends React.Component {
+      render() {
+        return (
+          <Parent inputRef={el => this.inputElement = el} >
+        )
+      }
+    }
+}
+
+function flow() {
+    // static type checker
+
+}
