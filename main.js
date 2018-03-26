@@ -4,56 +4,66 @@ function jsx() {
     // if no value is passed for a prop, it defaults to true
     // JSX will be compiled to React.createElement() method
     // content between opening and closing JSX tags is passed as props.children
-    <MyButton color="blue" shadowSize={2}>Click Me<MyButton>
+    <MyButton color="blue" shadowSize={2}>Click Me</MyButton>
     React.createElement(MyButton, {color: 'blue', shadowSize: 2}, "Click Me")
 
     const list = numbers.map(item => React.createElement("li", {key: item.id}, item))
-    const list = numbers.map(item => <li key={item.id}>{item}<li>)
+    const list = numbers.map(item => <li key={item.id}>{item}</li>)
 
     // quotes for string vals or curly braces for expressions
-    const element = <div tabIndex='0'>          // the same as <div tabIndex={'0'}>
+    const element = <div tabIndex='0' />          // the same as <div tabIndex={'0'}>
     const element = <div autocomplete />        // the same as <div autocomplete={true} />
-    const element = <img src={user.avatarUrl}>
+    const element = <img src={user.avatarUrl} />
     
     // embeded JS expressions
     <h1>Hello!
       {
-        unreadMessages.length > 0 && <h2> You have {unreadMessages.length} unread messages.
+        this.unreadMessages.length > 0 && 
+        <h2> You have {this.unreadMessages.length} unread messages.</h2>
       }
-    <h1>
+    </h1>
 
-    // condition render, booleans, null, undefined are ignored (now render)
+    // condition render, booleans, null, undefined are ignored (no render)
     <div>
-      { showHeader && <Header /> }      // component Header will be rendered if showHeader is true
+      { this.showHeader &&
+        <Header />
+      }
       <Content />
-    <div>
+    </div>
 
     // inline ternary operator
-    <div>
-      The user is {isLoggedIn ? "currently" : "not"} logged in.
-    <div>
+    <div>The user is {this.isLoggedIn ? "currently" : "not"} logged in.</div>
     <div>
       {
-        isLoggedIn ? ( 
-            <LogoutButton onClick={this.handleLogoutClick} >
+        this.isLoggedIn ? ( 
+            <LogoutButton onClick={this.handleLogoutClick} />
         ) : (
-            <LoginButton onClick={this.handleLoginClick} >
+            <LoginButton onClick={this.handleLoginClick} />
         )
       }
-    <div>
+    </div>
 
     // embeded map
-    function NumberList(props) {
-      return (
-        <ul>
-          {props.numbers.map(number => <ListItem key={number.toString()} value={number} > )}
-        <ul>
-      )
+    const arr = new Array("One", "Two", "Three")
+    class ListItem extends React.Component {
+        render() {
+            return <li>{this.props.value}</li>
+        }
     }
+    class App extends React.Component {
+        render() {
+            return (
+                <ul>
+                    {this.props.data.map((item, index) => <ListItem key={index} value={item} />)}
+                </ul>
+            )
+        }
+    }
+    ReactDOM.render(<App data={arr} />, document.getElementById("root"))
 
     // dot notation
     const MyComponents = {
-      DatePicker: function DatePicker(props) { return <div> {props.color} <div> }
+      DatePicker: function DatePicker(props) { return <div> {props.color} </div> }
     }
     function BlueDatePicker() {
       return <MyComponents.DatePicker color="blue" />
@@ -62,21 +72,21 @@ function jsx() {
     // spread attributes
     function App() {
       const props = {firstName: "Ben", lastName: "Hector"}
-      return <Greeting {...props}>            // the same as <Greeting firstName="Ben" lastName="Hector" />
+      return <Greeting {...props} />            // the same as <Greeting firstName="Ben" lastName="Hector" />
     }
 
     const Button = props => {
       const { kind, ...other } = props
       const className = kind === "primary" ? "PrimaryButton" : "SecondaryButton"
-      return <button className={className} {...other} >
+      return <button className={className} {...other} />
     }
     const App = () => {
       return (
         <div>
           <Button kind="primary" onClick={() => console.log("clicked!")}>
             Hello World!
-          <Button>
-        <div>
+          </Button>
+        </div>
       )
     }
     }
@@ -84,25 +94,52 @@ function jsx() {
 function element() {
     const elem = React.createElement("div", {"className": "name"},
         React.createElement("p", null, "Hello, World"))
-    const elem = <p className="name">"pass children to render"<p>   // the same as above
+    const elem = <p className="name">"pass children to render"</p>   // the same as above
 
     ReactDOM.render(elem, document.getElementById("root"))
     }
+function props() {
+    // one level deep
+    class App extends React.Component {
+        render() {
+            return (
+                <div>
+                    <header>{this.props.header}</header>
+                    <main>{this.props.main}</main>
+                </div>
+            )
+        }
+    }
+    const app = <App header="Header" main="Main Text" />
+    ReactDOM.render(app, document.getElementById("root"))
+    
+    // two or more level deep
+    class Header extends React.Component {
+        render() {
+            return (
+                <header>{this.props.header}</header>
+            )
+        }
+    }
+    class App extends React.Component {
+        render() {
+            return (
+                <div>
+                    <Header header={this.props.header} />
+                    <main>{this.props.main}</main>
+                </div>
+            )
+        }
+    }
+    const app = <App header="React header" main="React main text" />
+    }
+
 function lifeCycle() {
     componentDidMount() {...}       // after component output has been rendered to the DOM
     componentWillUnmount() {...}    //
     }
 
 function classComponent() {
-    // CLASS COMPONENT WITH PROPS
-    class ClassComponent extends React.Component {
-        render() {
-            return <h1>Hello, {this.props.name}
-        }
-    }
-    const elem = <ClassComponent name="Sergey" />
-    ReactDOM.render(elem, document.getElementById("root"))
-
     // CLASS COMPONENT WITH STATE
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -110,10 +147,7 @@ function classComponent() {
             this.state = {date: new Date()}
         }
         render() {
-            return (
-                <div>
-                    <p>It is {this.state.date.toLocaleTimeString()}
-            )
+            return <p>It is {this.state.date.toLocaleTimeString()}</p>
         }
     }
     const element = <ClassComponent />
@@ -141,16 +175,13 @@ function classComponent() {
             }))
         }
         render() {
-            return (
-                <div>
-                    <p>It is {this.state.date.toLocaleTimeString()}
-            )
+            return <p>It is {this.state.date.toLocaleTimeString()}</p>
         }
     }
 
     // PASS STATE DATA DOWN TO CHILD COMPONENT
     function FormattedDate(props) {
-        return <h2>It is {props.date.toLocaleTimeString()}
+        return <h2>It is {props.date.toLocaleTimeString()}</h2>
     }
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -158,23 +189,20 @@ function classComponent() {
             this.state = {date: new Date()}
         }
         render() {
-            return (
-                <div>
-                    <FormattedDate date={this.state.date}/>
-                </div>
-            )
+            return <FormattedDate date={this.state.date} />
         }
     }
     }
 function functionalComponent() {
     function FunctionalComponent(props) {
-        return <li>Hello, {props.name}
+        return <li>Hello, {props.name}</li>
     }
     function App() {
         return (
             <ul>
-                <FunctionalComponent name="Sergey"/>
-                <FunctionalComponent name="Olga"/>
+                <FunctionalComponent name="Sergey" />
+                <FunctionalComponent name="Olga" />
+            </ul>
         )
     }
     ReactDOM.render(<App />, document.getElementById("root"))
@@ -186,15 +214,15 @@ function composition() {
       return (
         <div className={'FancyBorder FancyBorder-' + props.color}>
           {props.children}
-        <div>
+        </div>
       )
     }
     function WelcomeDialog() {
       return (
         <FancyBorder color="blue">
-          <h1 className="Dialog-title"> Welcome <h1>    // will be passed to <FancyBorder> as props.children
-          <p className="Dialog-message"> Welcome <p>    // will be passed to <FancyBorder> as props.children
-        <FancyBorder>
+          <h1 className="Dialog-title">Welcome</h1>    // will be passed to <FancyBorder> as props.children
+          <p className="Dialog-message">Welcome</p>    // will be passed to <FancyBorder> as props.children
+        </FancyBorder>
       )
     }
     }
@@ -206,25 +234,24 @@ function event() {
             this.state = {isToggleOn: true}
             this.handleClickWithBind = this.handleClickWithBind.bind(this)
         }
-
         handleClickWithBind(e) {
             e.preventDefault()
         }
-
         handleClickWIthArrowFunc = (e) => {
             this.setState(prevState => ({
                 isToggleOn: !prevState.isToggleOn
             }))
         }
-
         render() {
             return (
                 <div>
-                    <button onClick={this.handleClickWithBind}>
+                    <button onClick={this.handleClickWithBind} />
                     <button onClick={this.handleClickWIthArrowFunc}>
                         {this.state.isToggleOn ? "ON" : "OFF"}
-                    <button onClick={(e) => this.deleteRow(id, e)}>
-                    <button onClick={this.deleteRow.bind(this, id)}>
+                    </button
+                    <button onClick={(e) => this.deleteRow(id, e)} />
+                    <button onClick={this.deleteRow.bind(this, id)} />
+                </div>
             )
         }
     }
@@ -555,7 +582,7 @@ function ref() {
         )
       }
     }
-}
+    }
 
 function flow() {
     // static type checker
