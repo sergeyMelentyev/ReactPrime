@@ -144,7 +144,9 @@ function classComponent() {
     class ClassComponent extends React.Component {
         constructor(props) {
             super(props)
-            this.state = {date: new Date()}
+            this.state = {
+                date: new Date()
+            }
         }
         render() {
             return <p>It is {this.state.date.toLocaleTimeString()}</p>
@@ -157,8 +159,8 @@ function classComponent() {
     class ClassComponent extends React.Component {
         constructor(props) {
             super(props)
-            this.state = {              // the only place where this.state can be assigned directly
-                date:  new Date(),
+            this.state = {  // the only place where this.state can be assigned directly
+                date: new Date(),
                 comments: []
             }
         }
@@ -194,6 +196,7 @@ function classComponent() {
     }
     }
 function functionalComponent() {
+    // stateless with only props down
     function FunctionalComponent(props) {
         return <li>Hello, {props.name}</li>
     }
@@ -205,9 +208,63 @@ function functionalComponent() {
             </ul>
         )
     }
-    ReactDOM.render(<App />, document.getElementById("root"))
+
+    // stateless with props down and events up
+    function CurrentTab(props) {
+        const navigationItems = new Array("ГЛАВНАЯ", "КАТАЛОГ", "АКЦИИ");
+        return (
+            <ul>
+                {navigationItems.map((item, index) => {
+                    return (
+                        <li onClick={props.onSelect.bind(null, item)}
+                            key={index}
+                            style={item === props.currentTab ? { fontWeight: "bold"} : null}>
+                            {item}
+                        </li>
+                    );
+                })}
+            </ul>
+        );
+    }
+    class Header extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = {
+                currentTab: "ГЛАВНАЯ"
+            }
+            this.updateCurrentTab = this.updateCurrentTab.bind(this)
+        }
+        updateCurrentTab(newTab) {
+            this.setState({currentTab: newTab})
+        }
+        render() {
+            return <CurrentTab currentTab={this.state.currentTab} onSelect={this.updateCurrentTab} />
+        }
+    }
     }
 
+function modules() {
+    // index.js
+    var React = require("react")
+    var ReactDOM = require("react-dom")
+    var App = require("./components/App.js")
+    require("./index.css")
+    ReactDOM.render(<App />, document.getElementById("root"))
+
+    // app.js
+    var React = require("react")
+    var Header = require("./Header.js")
+    class App extends React.Component {
+        render() {
+            return (
+                <div className="appContainer">
+                    <Header />
+                </div>
+            )
+        }
+    }
+    module.exports = App
+    }
 function composition() {
     // the same as slots in vue.js, can contain multiple injection points
     function FancyBorder(props) {
@@ -228,10 +285,13 @@ function composition() {
     }
 
 function event() {
+    // handle click with or without .bind()
     class ClassComponent extends React.Component {
         constructor(props) {
             super(props)
-            this.state = {isToggleOn: true}
+            this.state = {
+                isToggleOn: true
+            }
             this.handleClickWithBind = this.handleClickWithBind.bind(this)
         }
         handleClickWithBind(e) {
@@ -245,16 +305,50 @@ function event() {
         render() {
             return (
                 <div>
-                    <button onClick={this.handleClickWithBind} />
+                    <button onClick={this.handleClickWithBind}></button>
                     <button onClick={this.handleClickWIthArrowFunc}>
                         {this.state.isToggleOn ? "ON" : "OFF"}
-                    </button
-                    <button onClick={(e) => this.deleteRow(id, e)} />
-                    <button onClick={this.deleteRow.bind(this, id)} />
+                    </button>
+                    <button onClick={(e) => this.deleteRow(id, e)}></button>
+                    <button onClick={this.deleteRow.bind(this, id)}></button>
                 </div>
             )
         }
     }
+
+    // pass props via event onClick
+    class Header extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = {
+                currentTab: "ГЛАВНАЯ"
+            }
+            this.updateCurrentTab = this.updateCurrentTab.bind(this)
+        }
+        updateCurrentTab(newTab) {
+            this.setState({currentTab: newTab})
+        }
+        render() {
+            const navigationItems = new Array("ГЛАВНАЯ", "КАТАЛОГ", "АКЦИИ")
+            return (
+                <ul>
+                    {navigationItems.map((item, index) => {
+                        return (
+                            <li key={index}
+                                onClick={this.updateCurrentTab.bind(null, item)}>
+                                {item}
+                            </li>
+                        )
+                    })}
+                </ul>
+            )
+        }
+    }
+    }
+
+function style() {
+    // inline jsx styles
+    <li tyle={tab === this.state.currentTab ? { fontWeight: "bold"} : null}></li>
     }
 
 function conditionRendering() {
