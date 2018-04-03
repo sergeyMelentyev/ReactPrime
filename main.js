@@ -132,6 +132,19 @@ function props() {
         }
     }
     const app = <App header="React header" main="React main text" />
+
+    // default props
+    class App extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                propName: props.text
+            };
+        }
+    };
+    App.defaultProps = {
+        propName: "anyDefaultValue"
+    }
     }
 
 function lifeCycle() {
@@ -498,11 +511,14 @@ function router() {
     import { BrowserRouter, Route } from "react-router-dom"
     import Landing from "./second"
     import Search from "./third"
+    
     const App = () => (
         <BrowserRouter>
             <div>
-                <Route exact path="/" component={Landing}>
-                <Route path="/search" component={Search}>
+                <Route exact path="/" component={Landing} />
+                <Route path="/search" component={Search} />
+            </div>
+        </BrowserRouter>
     )
     render(<App />, document.getElementById("root"))
 
@@ -682,3 +698,21 @@ function flow() {
     // static type checker
 
 }
+
+function xrhRequest() {
+    // api.js
+    var axios = require("axios")
+    module.exports = {
+        fetchPopularRepos: function(language) {
+            var encodedURI = window.encodeURI("url")
+            return axios.get(encodedURI).then(response => response.data.items)
+        }
+    }
+
+    // index.js
+    var api = require("../utils/api")
+    updateCurrentTab(newTab) {
+        api.fetchPopularRepos(newTab)
+            .then(result => this.setState({currentTab: newTab, repositories: result}));
+    }
+    }
