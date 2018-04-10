@@ -274,8 +274,41 @@ function slots() {
     }
     }
 function higherOrderComponent() {
+    // the same as vue mixin
+    let HOCompGenerator = (Component, state) => class extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = state
+        }
+        componentDidMount() {
+            setInterval(() => {
+                this.setState({count: this.state.count + 1 })
+            }, 1000)
+        }
+        render() {
+            return <Component {...this.props} {...this.state} />
+        }
+    }
+    let Comp1 = (props)=> <div>{this.props.count}</div>
+    let Comp2 = (props)=> <div>{this.props.count}</div>
 
-}
+    let WrappedComp1 = HOCompGenerator(Comp1, {count: 0})
+    let WrappedComp2 = HOCompGenerator(Comp2, {count: 10})
+
+    class App extends React.Component {
+        constructor(props) {
+            super(props)
+        }
+        render() {
+            return (
+                <div>
+                    <WrappedComp1 />
+                    <WrappedComp2 />
+                </div>
+            )
+        }
+    }
+    }
 
 function event() {
     // handle click with or without .bind()
@@ -539,6 +572,15 @@ function router() {
 function ref() {
     // ref callback receives the underlying DOM element as its argument
     // invoked before componentDidMount() or componentDidUpdate() lifecycle hooks
+    submitMethod() {
+        this.setState({
+            input: ""
+        }, () => ReactDOM.findDOMNode(this.refs.inputBox)).focus()
+    }
+    <input ref="inputBox" value={this.state.input} onChange={this.handler} />
+    <button onClick={this.submitMethod}>Submit</button>
+
+    // via instance field
     class CustomTextInput extends React.Component {
       constructor(props) {
         super(props)
