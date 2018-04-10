@@ -143,7 +143,7 @@ function props() {
         }
     };
     App.defaultProps = {
-        propName: "anyDefaultValue"
+        propName: "anyDefauValue"
     }
     }
 
@@ -255,30 +255,7 @@ function functionalComponent() {
         }
     }
     }
-
-function modules() {
-    // index.js
-    var React = require("react")
-    var ReactDOM = require("react-dom")
-    var App = require("./components/App.js")
-    require("./index.css")
-    ReactDOM.render(<App />, document.getElementById("root"))
-
-    // app.js
-    var React = require("react")
-    var Header = require("./Header.js")
-    class App extends React.Component {
-        render() {
-            return (
-                <div className="appContainer">
-                    <Header />
-                </div>
-            )
-        }
-    }
-    module.exports = App
-    }
-function composition() {
+function slots() {
     // the same as slots in vue.js, can contain multiple injection points
     function FancyBorder(props) {
       return (
@@ -290,12 +267,15 @@ function composition() {
     function WelcomeDialog() {
       return (
         <FancyBorder color="blue">
-          <h1 className="Dialog-title">Welcome</h1>    // will be passed to <FancyBorder> as props.children
-          <p className="Dialog-message">Welcome</p>    // will be passed to <FancyBorder> as props.children
+          <h1 className="Dialog-title">Welcome</h1>
+          <p className="Dialog-message">Welcome</p>
         </FancyBorder>
       )
     }
     }
+function higherOrderComponent() {
+
+}
 
 function event() {
     // handle click with or without .bind()
@@ -366,14 +346,14 @@ function style() {
 
 function conditionRendering() {
     function Greeting(props) {
-        if (props.isLoggedIn) return <h1>Hello, User
-        return <h1>Hello, Guest
+        if (props.isLoggedIn) return <h1>Hello, User</h1>
+        return <h1>Hello, Guest</h1>
     }
     function LoginButton(props) {
-        return <button onClick={props.onClick}>LogIn
+        return <button onClick={props.onClick}>LogIn</button>
     }
     function LogoutButton(props) {
-        return <button onClick={props.onClick}>LogOut
+        return <button onClick={props.onClick}>LogOut</button>
     }
     class LoginControl extends React.Component {
         constructor(props) {
@@ -390,11 +370,12 @@ function conditionRendering() {
             if (this.state.isLoggedIn)
                 button = React.createElement(LogoutButton, {onClick: this.handleLogoutClick}, null)
             else
-                button = <LoginButton onClick={this.handleLoginClick}>
+                button = <LoginButton onClick={this.handleLoginClick} />
             return (
                 <div>
-                    <Greeting isLoggedIn={this.state.isLoggedIn}>
+                    <Greeting isLoggedIn={this.state.isLoggedIn} />
                     {button}
+                </div>
             )
         }
     }
@@ -406,25 +387,25 @@ function conditionRendering() {
         return (
             <div className="warning">
               Warning!
-            <div>
-            )
+            </div>
+        )
     }
     }
 function listRendering() {
     // without component
     const numbers = [1,2,3,4,5]
     const listItemsFirst = numbers.map((item,key) => React.createElement("li", {key: key}, item))
-    const listItemsSecond = numbers.map((item,key) => <li key={key}>{item}<li>)     // the same as above
+    const listItemsSecond = numbers.map((item,key) => <li key={key}>{item}</li>)
     ReactDOM.render(React.createElement("ul", null, listItemsFirst), document.getElementById("root"))
-    ReactDOM.render(<ul>{listItemsSecond}<ul>, document.getElementById("root"))     // the same as above
+    ReactDOM.render(<ul>{listItemsSecond}</ul>, document.getElementById("root"))
 
     // stateless functional component
     function CreateNumbers(props) {
-        const listNumbers = props.numbers.map((number, index) => <li key={index}>{number}<li>)
-        return (<ul>{listNumbers}<ul>)
+        const listNumbers = props.numbers.map((number, index) => <li key={index}>{number}</li>)
+        return (<ul>{listNumbers}</ul>)
     }
     const numbers = [1,2,3,4,5]
-    ReactDOM.render(<CreateNumbers numbers={numbers}>, document.getElementById("root"))
+    ReactDOM.render(<CreateNumbers numbers={numbers} />, document.getElementById("root"))
     }
 function form() {
     // submit, textarea and select handler
@@ -435,31 +416,28 @@ function form() {
             this.handleChange = this.handleChange.bind(this)
             this.handleSubmit = this.handleSubmit.bind(this)
         }
-
         handleChange(event) {
             this.setState({"value": event.target.value})
         }
-
         handleSubmit(event) {
             event.preventDefault()
             this.setState({"value": ""})
         }
-
         render() {
             return (
                 <form onSubmit={this.handleSubmit}>
                     <label>
                         Name:
-                        <input type="text" value={this.state.value} onChange={this.handleChange}>
-                        <textarea value={this.state.value} onChange={this.handleChange} >
+                        <input type="text" value={this.state.value} onChange={this.handleChange} />
+                        <textarea value={this.state.value} onChange={this.handleChange} />
                         <select value={this.state.value} onChange={this.handleChange}>
-                            <option value="coconut">Coconut<option>
-                            <option value="mango">Mango<option>
-                        <select>
-                        <select multiple={true} value={['B', 'C']}>
-                    <label>
-                    <input type="submit" value="Submit">
-                <form>
+                            <option value="coconut">Coconut</option>
+                            <option value="mango">Mango</option>
+                        </select>
+                        <select multiple={true} value={['B', 'C']} />
+                    </label>
+                    <input type="submit" value="Submit" />
+                </form>
             )
         }
     }
@@ -488,17 +466,17 @@ function form() {
                             name="isGoing"
                             type="checkbox"
                             checked={this.state.isGoing}
-                            onChange={this.handleInputChange} >
-                    <label>
+                            onChange={this.handleInputChange} />
+                    </label>
                     <label>
                         Number of guests:
                         <input
                             name="numberOfGuests"
                             type="number"
                             value={this.state.numberOfGuests}
-                            onChange={this.handleInputChange} >
-                    <label>
-                <form>
+                            onChange={this.handleInputChange} />
+                    </label>
+                </form>
             );
         }
     }
@@ -527,17 +505,19 @@ function router() {
     import { Link } from "react-router-dom"
     const Landing = () => (
         <div>
-            <h1>Search for video
+            <h1>Search for video</h1>
             <input type="text" placeholder="search" />
-            <Link to="/search">show all<Link>
+            <Link to="/search">show all</Link>
+        </div>
     )
-    export default Landing
+    export default Landing;
 
     // third.js
     import React from "react"
     const Search = () => (
         <div>
             Search component
+        </div>
     )
     export default Search
 
@@ -547,75 +527,13 @@ function router() {
         <BrowserRouter>
             <div>
                 <Switch>
-                    <Route exact path="/" component={Landing}>
-                    <Route path="/search" component={Search}>
-                    <Route component={FallBack404Component}>
+                    <Route exact path="/" component={Landing} />
+                    <Route path="/search" component={Search} />
+                    <Route component={FallBack404Component} />
+                </Switch>
+            </div>
+        </BrowserRouter>
     )
-    }
-
-function state() {
-    // LIFT STATE UP
-    const scaleNames = { c: "Celsius", f: "Fahrenheit" }
-    function toCelsius(fahrenheit) { return (fahrenheit - 32) * 5 / 9 }
-    function toFahrenheit(celsius) { return (celsius * 9 / 5) + 32 }
-    function tryConvert(temperature, convert) {
-        const input = parseFloat(temperature)
-        if (Number.isNaN(input)) return ''
-        const output = convert(input)
-        const rounded = Math.round(output * 1000) / 1000
-        return rounded.toString()
-    }
-    function BoilingVerdict(props) {
-        if (props.celsius >= 100) return <p>Water would boil.<p>
-        else return <p>Water would not boil.<p>
-    }
-    class TemperatureInput extends React.Component {
-        constructor(props) {
-            super(props)
-            this.handleChange = this.handleChange.bind(this)
-        }
-        handleChange(e) {
-            this.props.onTemperatureChange(e.target.value)
-        }
-        render() {
-            const scale = this.props.scale
-            const temperature = this.props.temperature;
-            return (
-                <fieldset>
-                    <legend>Enter temperature in {scaleNames[scale]}:<legend>
-                    <input value={temperature} onChange={this.handleChange}>
-                <fieldset>
-            )
-        }
-    }
-    class Calculator extends React.Component {
-        constructor(props) {
-            super(props)
-            this.state = {temperature: "", scale: ""}
-            this.handleCelsiusChange = this.handleCelsiusChange.bind(this)
-            this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this)
-        }
-        handleCelsiusChange(temperature) {
-            this.setState({scale: 'c', temperature})
-        }
-        handleFahrenheitChange(temperature) {
-            this.setState({scale: 'f', temperature})
-        }
-        render() {
-            const scale = this.state.scale
-            const temperature = this.state.temperature
-            const celsius = scale === "f" ? tryConvert(temperature, toCelsius) : temperature
-            const fahrenheit = scale === "c" ? tryConvert(temperature, toFahrenheit) : temperature
-            return (
-                <div>
-                    <TemperatureInput scale="c" temperature={celsius} onTemperatureChange={this.handleCelsiusChange}>
-                    <TemperatureInput scale="f" temperature={fahrenheit} onTemperatureChange={this.handleFahrenheitChange}>
-                    <BoilingVerdict celsius={celsius}>
-                <div>
-            )
-        }
-    }
-    render(<Calculator />, document.getElementById("root"))
     }
 
 function ref() {
@@ -633,9 +551,9 @@ function ref() {
         // store reference to input DOM elem in an instance field (this.textInput)
         return (
           <div>
-            <input type="text" ref={input => this.textInput = input} >  // will get called twice during updates
-            <input type="button" value="focus" onClick={this.focusTextInput} >
-          <div>
+            <input type="text" ref={input => this.textInput = input} />
+            <input type="button" value="focus" onClick={this.focusTextInput} />
+          </div>
         )
       }
     }
@@ -648,9 +566,9 @@ function ref() {
       }
       return (
         <div>
-          <input type="text" ref={input => textInput = input} >
-          <input type="button" value="focus" onClick={handleClick} >
-        <div>
+          <input type="text" ref={input => textInput = input} />
+          <input type="button" value="focus" onClick={handleClick} />
+        </div>
       ) 
     }
 
@@ -658,46 +576,33 @@ function ref() {
     function CustomTextInput(props) {
       return (
         <div>
-          <input ref={props.inputRef} >
-        <div>
+          <input ref={props.inputRef} />
+        </div>
       )
     }
     class Parent extends React.Component {
       render() {
-        return (
-          <CustomTextInput inputRef={el => this.inputElement = el} >
-        )
+        return <CustomTextInput inputRef={el => this.inputElement = el} />
       }
     }
 
     // exposing ref to grand parent component
     function CustomTextInput(props) {
-      return (
-        <div>
-          <input ref={props.inputRef} >
-        <div>
-      )
+      return <input ref={props.inputRef} />
     }
     function Parent(props) {
       return (
         <div>
-          My input: <CustomTextInput inputRef={props.inputRef} >
-        <div>
+          My input: <CustomTextInput inputRef={props.inputRef} />
+        </div>
       )
     }
     class Grandparent extends React.Component {
       render() {
-        return (
-          <Parent inputRef={el => this.inputElement = el} >
-        )
+        return <Parent inputRef={el => this.inputElement = el} />
       }
     }
     }
-
-function flow() {
-    // static type checker
-
-}
 
 function xrhRequest() {
     // api.js
@@ -715,4 +620,27 @@ function xrhRequest() {
         api.fetchPopularRepos(newTab)
             .then(result => this.setState({currentTab: newTab, repositories: result}));
     }
+    }
+
+function modules() {
+    // index.js
+    var React = require("react")
+    var ReactDOM = require("react-dom")
+    var App = require("./components/App.js")
+    require("./index.css")
+    ReactDOM.render(<App />, document.getElementById("root"))
+
+    // app.js
+    var React = require("react")
+    var Header = require("./Header.js")
+    class App extends React.Component {
+        render() {
+            return (
+                <div className="appContainer">
+                    <Header />
+                </div>
+            )
+        }
+    }
+    module.exports = App
     }
