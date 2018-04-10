@@ -149,7 +149,8 @@ function props() {
 
 function lifeCycle() {
     componentDidMount() {...}       // after component output has been rendered to the DOM
-    componentWillUnmount() {...}    //
+    componentWillUnmount() {...}
+    shouldComponentUpdate(nextProps, nextState) {...}
     }
 
 function classComponent() {
@@ -373,8 +374,11 @@ function event() {
     }
 
 function style() {
-    // inline jsx styles
-    <li tyle={tab === this.state.currentTab ? { fontWeight: "bold"} : null}></li>
+    // via global import
+    import "./style/app.css";
+
+    // inline jsx style
+    <li style={tab === this.state.currentTab ? { fontWeight: "bold"} : null} />
     }
 
 function conditionRendering() {
@@ -514,61 +518,6 @@ function form() {
         }
     }
     }
-
-function router() {
-    // index.js file
-    import React from "react"
-    import { render } from "react-dom"
-    import { BrowserRouter, Route } from "react-router-dom"
-    import Landing from "./second"
-    import Search from "./third"
-    
-    const App = () => (
-        <BrowserRouter>
-            <div>
-                <Route exact path="/" component={Landing} />
-                <Route path="/search" component={Search} />
-            </div>
-        </BrowserRouter>
-    )
-    render(<App />, document.getElementById("root"))
-
-    // second.js
-    import React from "react"
-    import { Link } from "react-router-dom"
-    const Landing = () => (
-        <div>
-            <h1>Search for video</h1>
-            <input type="text" placeholder="search" />
-            <Link to="/search">show all</Link>
-        </div>
-    )
-    export default Landing;
-
-    // third.js
-    import React from "react"
-    const Search = () => (
-        <div>
-            Search component
-        </div>
-    )
-    export default Search
-
-    // switch component will render exactly one component
-    import { BrowserRouter, Route, Switch } from "react-router-dom"
-    const App = () => (
-        <BrowserRouter>
-            <div>
-                <Switch>
-                    <Route exact path="/" component={Landing} />
-                    <Route path="/search" component={Search} />
-                    <Route component={FallBack404Component} />
-                </Switch>
-            </div>
-        </BrowserRouter>
-    )
-    }
-
 function ref() {
     // ref callback receives the underlying DOM element as its argument
     // invoked before componentDidMount() or componentDidUpdate() lifecycle hooks
@@ -646,21 +595,93 @@ function ref() {
     }
     }
 
-function xrhRequest() {
-    // api.js
-    var axios = require("axios")
-    module.exports = {
-        fetchPopularRepos: function(language) {
-            var encodedURI = window.encodeURI("url")
-            return axios.get(encodedURI).then(response => response.data.items)
-        }
+function router() {
+    // index.js file
+    import React from "react"
+    import {render} from "react-dom"
+    import {BrowserRouter, Route} from "react-router-dom"
+    import Landing from "./second"
+    import Search from "./third"
+    
+    const App = () => (
+        <BrowserRouter>
+            <div>
+                <Route exact path="/" component={Landing} />
+                <Route path="/search" component={Search} />
+            </div>
+        </BrowserRouter>
+    )
+    render(<App />, document.getElementById("root"))
+
+    // second.js
+    import React from "react"
+    import { Link } from "react-router-dom"
+    const Landing = () => (
+        <div>
+            <h1>Search for video</h1>
+            <input type="text" placeholder="search" />
+            <Link to="/search">show all</Link>
+        </div>
+    )
+    export default Landing;
+
+    // third.js
+    import React from "react"
+    const Search = () => (
+        <div>
+            Search component
+        </div>
+    )
+    export default Search
+
+    // switch component will render exactly one component
+    import { BrowserRouter, Route, Switch } from "react-router-dom"
+    const App = () => (
+        <BrowserRouter>
+            <div>
+                <Switch>
+                    <Route exact path="/" component={Landing} />
+                    <Route path="/search" component={Search} />
+                    <Route component={FallBack404Component} />
+                </Switch>
+            </div>
+        </BrowserRouter>
+    )
     }
 
+function xrhRequest() {
+    // api.js
+    function getUserData(user) {
+        return axios.all([
+            getProfile(user),
+            getRepos(user)
+        ]).then(response => {
+            var profile = response[0];
+            var repos = response[1];
+            return {
+                profile: profile,
+                score: calculateScore(profile, repos)
+            };
+        });
+    }
+    export default {
+        fetchCompareUsers: function(users) {
+            return axios.all(users.map(getUserData)).catch(handleError);
+        },
+        fetchPopularRepos: function(language) {
+            var encodedURI = window.encodeURI(`https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=stars&order=desc&type=Repositories`);
+            return axios.get(encodedURI).then(response => response.data.items);
+        }
+    };
+
     // index.js
-    var api = require("../utils/api")
+    import Api from "../../utils/Api";
     updateCurrentTab(newTab) {
-        api.fetchPopularRepos(newTab)
+        Api.fetchPopularRepos(newTab)
             .then(result => this.setState({currentTab: newTab, repositories: result}));
+    }
+    componentDidMount() {
+        this.updateCurrentTab(this.state.currentTab);
     }
     }
 
