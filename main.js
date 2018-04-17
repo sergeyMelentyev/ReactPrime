@@ -597,12 +597,7 @@ function ref() {
 
 function router() {
     // index.js file
-    import React from "react"
-    import {render} from "react-dom"
     import {BrowserRouter, Route} from "react-router-dom"
-    import Landing from "./second"
-    import Search from "./third"
-    
     const App = () => (
         <BrowserRouter>
             <div>
@@ -611,28 +606,15 @@ function router() {
             </div>
         </BrowserRouter>
     )
-    render(<App />, document.getElementById("root"))
 
     // second.js
-    import React from "react"
-    import { Link } from "react-router-dom"
+    import {Link, NavLink} from "react-router-dom"
     const Landing = () => (
         <div>
-            <h1>Search for video</h1>
-            <input type="text" placeholder="search" />
             <Link to="/search">show all</Link>
+            <NavLink activeClassName="activeNavTab" exact to="/">Home</NavLink>
         </div>
     )
-    export default Landing;
-
-    // third.js
-    import React from "react"
-    const Search = () => (
-        <div>
-            Search component
-        </div>
-    )
-    export default Search
 
     // switch component will render exactly one component
     import { BrowserRouter, Route, Switch } from "react-router-dom"
@@ -647,6 +629,31 @@ function router() {
             </div>
         </BrowserRouter>
     )
+
+    // pass props
+    const Child = ({match}) => (
+        <div>
+            <p>{match.params.id}</p>
+        </div>
+    );
+    <div>
+        <h1>Accounts</h1>
+        <ul>
+            <li><Link to="/components">Components</Link></li>
+            <li><Link to="/state">State</Link></li>
+        </ul>
+        <Route path="/:id" component={Child} />
+    </div>
+    }
+
+function redux() {
+    //
+    Object.keys(state)
+        .filter(userId => action.userId !== userId)
+        .reduce((prev, current) => {
+            prev[current] = state[current]
+            return prev
+        }, {})
     }
 
 function xrhRequest() {
@@ -707,3 +714,4 @@ function modules() {
     }
     module.exports = App
     }
+
