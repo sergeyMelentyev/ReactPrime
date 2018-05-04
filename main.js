@@ -646,6 +646,9 @@ function router() {
     </div>
     }
 
+function flux() {
+    //
+    }
 function redux() {
     //
     Object.keys(state)
@@ -714,4 +717,3 @@ function modules() {
     }
     module.exports = App
     }
-
