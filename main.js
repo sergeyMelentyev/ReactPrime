@@ -111,7 +111,6 @@ function props() {
         }
     }
     const app = <App header="Header" main="Main Text" />
-    ReactDOM.render(app, document.getElementById("root"))
     
     // two or more level deep
     class Header extends React.Component {
@@ -143,7 +142,7 @@ function props() {
         }
     };
     App.defaultProps = {
-        propName: "anyDefauValue"
+        propName: "anyDefaultValue"
     }
     }
 
@@ -153,6 +152,24 @@ function lifeCycle() {
     shouldComponentUpdate(nextProps, nextState) {...}
     }
 
+function setState() {
+    // passing object as an arg to setState
+    this.setState({ count: ++this.state.count });
+
+    // passing function as an arg to setState, some logic could be added
+    this.setState(state => {
+        if (state.count >= 5) return void 0;
+        return { count: ++state.count };
+    });
+
+    // passing callback as a second arg to setState, will be called after state has changed
+    this.setState( {count: ++this.state.count}, () => console.log(this.state));
+
+    // receive previous state as 1st arg, and props at the time the update is applied
+    this.setState((prevState, props) => ({
+        counter: prevState.counter + props.increment
+    }))
+    }
 function classComponent() {
     // CLASS COMPONENT WITH STATE
     class ClassComponent extends React.Component {
@@ -166,14 +183,12 @@ function classComponent() {
             return <p>It is {this.state.date.toLocaleTimeString()}</p>
         }
     }
-    const element = <ClassComponent />
-    ReactDOM.render(element, document.getElementById("root"))
 
     // UPDATE STATE DYNAMICALLY
     class ClassComponent extends React.Component {
         constructor(props) {
             super(props)
-            this.state = {  // the only place where this.state can be assigned directly
+            this.state = {      // the only place where this.state can be assigned directly
                 date: new Date(),
                 comments: []
             }
@@ -182,7 +197,7 @@ function classComponent() {
             this.timerID = setInterval(() => this.tick(), 1000)
         }
         tick() {
-            this.setState({date: new Date()})               // render.method will be called again and again
+            this.setState({date: new Date()})
             this.setState({comments: response.comments})    // update states independently
             
             // receive previous state as 1st arg, and props at the time the update is applied
@@ -315,7 +330,6 @@ function event() {
     // handle click with or without .bind()
     class ClassComponent extends React.Component {
         constructor(props) {
-            super(props)
             this.state = {
                 isToggleOn: true
             }
@@ -346,7 +360,6 @@ function event() {
     // pass props via event onClick
     class Header extends React.Component {
         constructor(props) {
-            super(props)
             this.state = {
                 currentTab: "ГЛАВНАЯ"
             }
@@ -371,6 +384,123 @@ function event() {
             )
         }
     }
+
+    // pass event handler two or more levels deep
+    let defaultState = [
+        {value: "Pants", id: Math.random().toString(36).substr(2, 9), packed: false},
+        {value: "Sandwich", id: Math.random().toString(36).substr(2, 9), packed: true}
+    ]
+    export default class Header extends React.Component {
+        constructor(props) {
+            this.state = {
+                items: defaultState
+            }
+            this.handleRemoveItem = this.handleRemoveItem.bind(this)
+            this.handleToggleItem = this.handleToggleItem.bind(this)
+        }
+        handleRemoveItem(item) {
+            this.setState({items: this.state.items.filter(stateItem => stateItem.id !== item.id)})
+        }
+        handleToggleItem(itemToToggle) {
+            const items = this.state.items.map(item => {
+                if (item.id !== itemToToggle.id) return item
+                item.packed = !itemToToggle.packed
+                return item
+            })
+            this.setState({ items })
+        }
+        render() {
+            const unpackedItems = this.state.items.filter(item => !item.packed)
+            const packedItems = this.state.items.filter(item => item.packed)
+            return (
+                <div className="header__wrapper">
+                    <TestItems title="Unpacked Items" items={unpackedItems} onRemove={this.handleRemoveItem} onToggle={this.handleToggleItem} />
+                    <TestItems title="Packed Items" items={packedItems} onRemove={this.handleRemoveItem} onToggle={this.handleToggleItem} />
+                    <button onClick={this.markAllAsUnpacked}>Mark All As Unpacked</button>
+                </div>
+            )
+        }
+    }
+    export default class TestItems extends React.Component {
+        render() {
+            const {title, items, onRemove, onToggle} = this.props
+            return (
+                <div>
+                    <h1>{title} {items.length}</h1>
+                    <input type="text" />
+                    <ul className="testPackedItems">
+                        {
+                            items.map((item, index) =>
+                                <TestItem key={index} item={item}
+                                          onRemove={() => onRemove(item)}
+                                          onToggle={() => onToggle(item)} />
+                            )
+                        }
+                    </ul>
+                </div>
+            )
+        }
+    }
+    export default class TestItem extends React.Component {
+        render() {
+            const {item, onRemove, onToggle} = this.props
+            return (
+                <li className="testItem">
+                    <input type="checkbox" checked={item.packed} onChange={onToggle} />
+                    <span>{this.props.item.value}</span>
+                    <button onClick={onRemove}>Remove</button>
+                </li>
+            )
+        }
+    }
+    }
+function formValidation() {
+    // input text field with submit btn
+    export default class Header extends React.Component {
+        constructor(props) {
+            super(props)
+            super(props)
+            this.state = { items: new Array() }
+            this.handleSubmit = this.handleSubmit.bind(this)
+        }
+        handleSubmit(value) {
+            if (!value) return void 0
+            const result = new Object()
+            Object.defineProperties(result, {
+                "value": {value: value, writable: true, enumerable: true, configurable: true},
+                "id": {value: Math.random().toString(36).substr(2, 9), writable: true, enumerable: true, configurable: true},
+                "packed": {value: false, writable: true, enumerable: true, configurable: true}
+            })
+            this.setState({items: [result, ...this.state.items]})
+        }
+        render() {
+            return <TestSubmitComp onSubmit={this.handleSubmit} />
+        }
+    }
+    export default class TestSubmitComp extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = { value: "" }
+            this.handleChange = this.handleChange.bind(this)
+            this.handleSubmit = this.handleSubmit.bind(this)
+        }
+        handleChange(event) {
+            this.setState({value: event.target.value})
+        }
+        handleSubmit() {
+            this.props.onSubmit(this.state.value)
+            this.setState({value: ""})
+        }
+        render() {
+            return (
+                <div className="testSubmitComp">
+                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    <button onClick={this.handleSubmit}>Submit</button>
+                </div>
+            )
+        }
+    }
+    // 
     }
 
 function style() {
