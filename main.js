@@ -289,42 +289,6 @@
       )
     }
     }
-(higherOrderComponent) => {
-    // the same as vue mixin
-    let HOCompGenerator = (Component, state) => class extends React.Component {
-        constructor(props) {
-            super(props)
-            this.state = state
-        }
-        componentDidMount() {
-            setInterval(() => {
-                this.setState({count: this.state.count + 1 })
-            }, 1000)
-        }
-        render() {
-            return <Component {...this.props} {...this.state} />
-        }
-    }
-    let Comp1 = (props)=> <div>{this.props.count}</div>
-    let Comp2 = (props)=> <div>{this.props.count}</div>
-
-    let WrappedComp1 = HOCompGenerator(Comp1, {count: 0})
-    let WrappedComp2 = HOCompGenerator(Comp2, {count: 10})
-
-    class App extends React.Component {
-        constructor(props) {
-            super(props)
-        }
-        render() {
-            return (
-                <div>
-                    <WrappedComp1 />
-                    <WrappedComp2 />
-                </div>
-            )
-        }
-    }
-    }
 
 (style) => {
     // via global import
@@ -816,7 +780,74 @@
     }
 
 (rawPatterns) => {
-    //
+    // container pattern, parrent with state, child with UI only
+    export default class TestIncrementCounter extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = { count: 0 }
+            this.handleIncrement = this.handleIncrement.bind(this)
+            this.handleDecrement = this.handleDecrement.bind(this)
+            this.handleReset = this.handleReset.bind(this)
+        }
+        handleIncrement() {
+            this.setState({ count: this.state.count +1 })
+        }
+        handleDecrement() {
+            this.setState({ count: this.state.count -1 })
+        }
+        handleReset() {
+            this.setState({ count: 0 })
+        }
+        render() {
+            return (
+                <TestIncrementUI count={this.state.count}
+                                 onIncrement={this.handleIncrement}
+                                 onDecrement={this.handleDecrement}
+                                 onReset={this.handleReset} />
+            )
+        }
+    }
+    export default function TestIncrementUI(props) {
+        const { count, onIncrement, onDecrement, onReset } = props
+        return (
+            <div className="testIncrementUI">
+                <p>Counter: {count}</p>
+                <button onClick={onIncrement}>Increment</button>
+                <button onClick={onDecrement}>Decrement</button>
+                <button onClick={onReset}>Reset</button>
+            </div>
+        )
+    }
+
+    // higher order component, the same as vue mixin
+    let HOCompGenerator = (WrappedComponent, state) => class extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = state
+        }
+        componentDidMount() {
+            setInterval(() => {
+                this.setState({count: this.state.count + 1 })
+            }, 1000)
+        }
+        render() {
+            return <WrappedComponent {...this.props} {...this.state} />
+        }
+    }
+    let Comp1 = (props)=> <div>{props.count}</div>
+    let Comp2 = (props)=> <div>{props.count}</div>
+    let WrappedComp1 = HOCompGenerator(Comp1, {count: 0})
+    let WrappedComp2 = HOCompGenerator(Comp2, {count: 10})
+    export default class TestHOComponent extends React.Component {
+        render() {
+            return (
+                <div>
+                    <WrappedComp1 />
+                    <WrappedComp2 />
+                </div>
+            )
+        }
+    }
 }
 (flux) => {
     //
