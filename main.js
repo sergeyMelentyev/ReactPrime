@@ -1,4 +1,4 @@
-function jsx() {
+(jsx) => {
     // JSX type can't be an expression
     // logical if statement and for loop are not expressions, can’t be used in JSX type
     // if no value is passed for a prop, it defaults to true
@@ -91,14 +91,14 @@ function jsx() {
     }
     }
 
-function element() {
+(element) => {
     const elem = React.createElement("div", {"className": "name"},
         React.createElement("p", null, "Hello, World"))
     const elem = <p className="name">"pass children to render"</p>   // the same as above
 
     ReactDOM.render(elem, document.getElementById("root"))
     }
-function props() {
+(props) => {
     // one level deep
     class App extends React.Component {
         render() {
@@ -146,13 +146,13 @@ function props() {
     }
     }
 
-function lifeCycle() {
+(lifeCycle) => {
     componentDidMount() {...}       // after component output has been rendered to the DOM
     componentWillUnmount() {...}
     shouldComponentUpdate(nextProps, nextState) {...}
     }
 
-function setState() {
+(setState) => {
     // passing object as an arg to setState
     this.setState({ count: ++this.state.count });
 
@@ -170,7 +170,7 @@ function setState() {
         counter: prevState.counter + props.increment
     }))
     }
-function classComponent() {
+(classComponent) => {
     // CLASS COMPONENT WITH STATE
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -224,7 +224,7 @@ function classComponent() {
         }
     }
     }
-function functionalComponent() {
+(functionalComponent) => {
     // stateless with only props down
     function FunctionalComponent(props) {
         return <li>Hello, {props.name}</li>
@@ -271,7 +271,7 @@ function functionalComponent() {
         }
     }
     }
-function slots() {
+(slots) => {
     // the same as slots in vue.js, can contain multiple injection points
     function FancyBorder(props) {
       return (
@@ -289,7 +289,7 @@ function slots() {
       )
     }
     }
-function higherOrderComponent() {
+(higherOrderComponent) => {
     // the same as vue mixin
     let HOCompGenerator = (Component, state) => class extends React.Component {
         constructor(props) {
@@ -326,7 +326,15 @@ function higherOrderComponent() {
     }
     }
 
-function event() {
+(style) => {
+    // via global import
+    import "./style/app.css";
+
+    // inline jsx style
+    <li style={tab === this.state.currentTab ? { fontWeight: "bold"} : null} />
+    }
+
+(event) => {
     // handle click with or without .bind()
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -454,64 +462,7 @@ function event() {
         }
     }
     }
-function formValidation() {
-    // input text field with submit btn
-    export default class Header extends React.Component {
-        constructor(props) {
-            super(props)
-            super(props)
-            this.state = { items: new Array() }
-            this.handleSubmit = this.handleSubmit.bind(this)
-        }
-        handleSubmit(value) {
-            if (!value) return void 0
-            const result = new Object()
-            Object.defineProperties(result, {
-                "value": {value: value, writable: true, enumerable: true, configurable: true},
-                "id": {value: Math.random().toString(36).substr(2, 9), writable: true, enumerable: true, configurable: true},
-                "packed": {value: false, writable: true, enumerable: true, configurable: true}
-            })
-            this.setState({items: [result, ...this.state.items]})
-        }
-        render() {
-            return <TestSubmitComp onSubmit={this.handleSubmit} />
-        }
-    }
-    export default class TestSubmitComp extends React.Component {
-        constructor(props) {
-            super(props)
-            this.state = { value: "" }
-            this.handleChange = this.handleChange.bind(this)
-            this.handleSubmit = this.handleSubmit.bind(this)
-        }
-        handleChange(event) {
-            this.setState({value: event.target.value})
-        }
-        handleSubmit() {
-            this.props.onSubmit(this.state.value)
-            this.setState({value: ""})
-        }
-        render() {
-            return (
-                <div className="testSubmitComp">
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
-                    <button onClick={this.handleSubmit}>Submit</button>
-                </div>
-            )
-        }
-    }
-    // 
-    }
-
-function style() {
-    // via global import
-    import "./style/app.css";
-
-    // inline jsx style
-    <li style={tab === this.state.currentTab ? { fontWeight: "bold"} : null} />
-    }
-
-function conditionRendering() {
+(conditionRendering) => {
     function Greeting(props) {
         if (props.isLoggedIn) return <h1>Hello, User</h1>
         return <h1>Hello, Guest</h1>
@@ -558,7 +509,7 @@ function conditionRendering() {
         )
     }
     }
-function listRendering() {
+(listRendering) => {
     // without component
     const numbers = [1,2,3,4,5]
     const listItemsFirst = numbers.map((item,key) => React.createElement("li", {key: key}, item))
@@ -574,7 +525,7 @@ function listRendering() {
     const numbers = [1,2,3,4,5]
     ReactDOM.render(<CreateNumbers numbers={numbers} />, document.getElementById("root"))
     }
-function form() {
+(form) => {
     // submit, textarea and select handler
     class NameForm extends React.Component {
         constructor(props) {
@@ -647,8 +598,96 @@ function form() {
             );
         }
     }
+
+    // input text field with submit btn
+    export default class Header extends React.Component {
+        constructor(props) {
+            super(props)
+            super(props)
+            this.state = { items: new Array() }
+            this.handleSubmit = this.handleSubmit.bind(this)
+        }
+        handleSubmit(value) {
+            if (!value) return void 0
+            const result = new Object()
+            Object.defineProperties(result, {
+                "value": {value: value, writable: true, enumerable: true, configurable: true},
+                "id": {value: Math.random().toString(36).substr(2, 9), writable: true, enumerable: true, configurable: true},
+                "packed": {value: false, writable: true, enumerable: true, configurable: true}
+            })
+            this.setState({items: [result, ...this.state.items]})
+        }
+        render() {
+            return <TestSubmitComp onSubmit={this.handleSubmit} />
+        }
     }
-function ref() {
+    export default class TestSubmitComp extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = { value: "" }
+            this.handleChange = this.handleChange.bind(this)
+            this.handleSubmit = this.handleSubmit.bind(this)
+        }
+        handleChange(event) {
+            this.setState({value: event.target.value})
+        }
+        handleSubmit() {
+            this.props.onSubmit(this.state.value)
+            this.setState({value: ""})
+        }
+        render() {
+            return (
+                <div className="testSubmitComp">
+                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    <button onClick={this.handleSubmit}>Submit</button>
+                </div>
+            )
+        }
+    }
+    }
+(filter) => {
+    // simple filtering via state value
+    export default class TestItems extends React.Component {
+        constructor(props) {
+            this.state = { searchTerm: "" }
+            this.updateSearchTerm = this.updateSearchTerm.bind(this)
+        }
+        updateSearchTerm(searchTerm) {
+            this.setState({ searchTerm })
+        }
+        render() {
+            const {title, items, onRemove, onToggle} = this.props
+            return (
+                <div>
+                    <TestFilter searchTerm={this.state.searchTerm} onChange={this.updateSearchTerm} />
+                    <ul className="testPackedItems">
+                        {
+                            items
+                                .filter(item => item.value.toLowerCase().includes(this.state.searchTerm.toLowerCase()))
+                                .map((item, index) =>
+                                <TestItem key={index} item={item}
+                                          onRemove={() => onRemove(item)}
+                                          onToggle={() => onToggle(item)} />
+                            )
+                        }
+                    </ul>
+                </div>
+            )
+        }
+    }
+    export default class TestFilter extends React.Component {
+        constructor(props) {
+            this.handleChange = this.handleChange.bind(this)
+        }
+        handleChange(event) {
+            this.props.onChange(event.target.value)
+        }
+        render() {
+            return <input type="text" value={this.props.searchTerm} onChange={this.handleChange} />
+        }
+    }
+    }
+(ref) => {
     // ref callback receives the underlying DOM element as its argument
     // invoked before componentDidMount() or componentDidUpdate() lifecycle hooks
     submitMethod() {
@@ -725,7 +764,7 @@ function ref() {
     }
     }
 
-function router() {
+(router) => {
     // index.js file
     import {BrowserRouter, Route} from "react-router-dom"
     const App = () => (
@@ -776,10 +815,13 @@ function router() {
     </div>
     }
 
-function flux() {
+(rawPatterns) => {
+    //
+}
+(flux) => {
     //
     }
-function redux() {
+(redux) => {
     //
     Object.keys(state)
         .filter(userId => action.userId !== userId)
@@ -789,7 +831,7 @@ function redux() {
         }, {})
     }
 
-function xrhRequest() {
+(xrhRequest) => {
     // api.js
     function getUserData(user) {
         return axios.all([
@@ -825,7 +867,7 @@ function xrhRequest() {
     }
     }
 
-function modules() {
+(modules) => {
     // index.js
     var React = require("react")
     var ReactDOM = require("react-dom")
