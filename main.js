@@ -878,7 +878,70 @@
     <WithCount render={(count, increment) => <Counter count={count} onIncrement={increment} />} />
     }
 (flux) => {
-    //
+    // create a dispatcher object
+    import { Dispatcher } from "flux"
+    export default new Dispatcher()
+
+    // create actions functions
+    import AppDispatcher from "./AppDispatcher"
+    export const updateCounterOnIncrement = (value) => {
+        AppDispatcher.dispatch({ type: "INCREMENT_COUNTER", value })
+    }
+    export const updateCounterOnDecrement = (value) => {
+        AppDispatcher.dispatch({ type: "DECREMENT_COUNTER", value })
+    }
+    export const updateCounterOnRest = () => {
+        AppDispatcher.dispatch({ type: "RESET_COUNTER" })
+    }
+
+    // create store object
+    import EventEmitter from "events"
+    import AppDispatcher from "./AppDispatcher"
+    let store = { count: 0 }
+    class AppStore extends EventEmitter {
+        constructor() {
+            super()
+            AppDispatcher.register(action => {
+                if (action.type === "INCREMENT_COUNTER") {
+                    store.count += action.value
+                    this.emit("change")
+                }
+                if (action.type === "DECREMENT_COUNTER") {
+                    store.count -= action.value
+                    this.emit("change")
+                }
+                if (action.type === "RESET_COUNTER") {
+                    store.count = 0
+                    this.emit("change")
+                }
+            })
+        }
+        getState() { return store }
+    }
+    export default new AppStore()
+
+    // use inside components
+    import AppStore from "./AppStore"
+    import * as actions from "./AppActions"
+    export default class TestIncrementCounter extends React.Component {
+        constructor(props) { this.state = AppStore.getState() }
+        updateState() { this.setState(AppStore.getState()) }
+        componentDidMount() { AppStore.on("change", this.updateState) }
+        componentWillUnmount() { AppStore.off("change", this.updateState) }
+        handleIncrement() { actions.updateCounterOnIncrement(1) }
+        handleDecrement() { actions.updateCounterOnDecrement(1) }
+        handleReset() { actions.updateCounterOnRest() }
+        render() {
+            return (
+                <div>
+                    <p>Counter: {this.state.count}</p>
+                    <button onClick={this.handleIncrement}>Increment</button>
+                    <button onClick={this.handleDecrement}>Decrement</button>
+                    <button onClick={this.handleReset}>Reset</button>
+                </div>
+            )
+        }
+    }
     }
 (redux) => {
     //
