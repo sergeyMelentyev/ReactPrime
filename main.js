@@ -820,19 +820,26 @@
     }
 
     // higher order component, the same as vue mixin
-    let HOCompGenerator = (WrappedComponent, state) => class extends React.Component {
-        constructor(props) {
-            super(props)
-            this.state = state
+    let HOCompGenerator = (WrappedComponent, state) => {
+        const Container = class extends React.Component {
+            constructor(props) {
+                super(props)
+                this.state = state
+            }
+            componentDidMount() {
+                setInterval(() => {
+                    this.setState({count: this.state.count + 1 })
+                }, 1000)
+            }
+            increment() {
+                this.setState(state => ({ count: state.count +1 }))
+            }
+            render() {
+                return <WrappedComponent {...this.props} {...this.state} onIncrement={this.increment} />
+            }
         }
-        componentDidMount() {
-            setInterval(() => {
-                this.setState({count: this.state.count + 1 })
-            }, 1000)
-        }
-        render() {
-            return <WrappedComponent {...this.props} {...this.state} />
-        }
+        Container.displayName = `WithPizzaCalculator(${WrappedComponent.displayName || WrappedComponent.name})`
+        return Container
     }
     let Comp1 = (props)=> <div>{props.count}</div>
     let Comp2 = (props)=> <div>{props.count}</div>
@@ -848,7 +855,28 @@
             )
         }
     }
-}
+
+    // render properties
+    export default class WithCount export React.Component {
+        constructor(props) {
+            super(props)
+            this.state = { count: 0 }
+        }
+        increment() {
+            this.setState({ state: this.state.count + 1 })
+        }
+        render() {
+            return (
+                <div>
+                    {
+                        this.props.render(this.state.count, this.increment)
+                    }
+                </div>
+            )
+        }
+    }
+    <WithCount render={(count, increment) => <Counter count={count} onIncrement={increment} />} />
+    }
 (flux) => {
     //
     }
