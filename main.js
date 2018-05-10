@@ -952,6 +952,15 @@
             return prev
         }, {})
     }
+(redux_thunk) => {
+    //
+    }
+(redux_saga) => {
+    //
+    }
+(redux_mobx) => {
+    //
+}
 
 (xrhRequest) => {
     // api.js
