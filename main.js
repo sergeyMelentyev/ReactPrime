@@ -779,7 +779,7 @@
     </div>
     }
 
-(rawPatterns) => {
+(rawStatePatterns) => {
     // container pattern, parrent with state, child with UI only
     export default class TestIncrementCounter extends React.Component {
         constructor(props) {
@@ -878,11 +878,11 @@
     <WithCount render={(count, increment) => <Counter count={count} onIncrement={increment} />} />
     }
 (flux) => {
-    // create a dispatcher object
+    // dispatcher obj, should be only one singleton, used to broadcast payloads to registered callbacks
     import { Dispatcher } from "flux"
     export default new Dispatcher()
 
-    // create actions functions
+    // actions functions
     import AppDispatcher from "./AppDispatcher"
     export const updateCounterOnIncrement = (value) => {
         AppDispatcher.dispatch({ type: "INCREMENT_COUNTER", value })
@@ -894,7 +894,7 @@
         AppDispatcher.dispatch({ type: "RESET_COUNTER" })
     }
 
-    // create store object
+    // store object, every store will receive every action
     import EventEmitter from "events"
     import AppDispatcher from "./AppDispatcher"
     let store = { count: 0 }
@@ -944,7 +944,27 @@
     }
     }
 (redux) => {
-    //
+    // one object with small combined reducers inside (several states)
+    // bind with react via react-redux lib
+    var initState = { result: 0 }
+    var addAction = { type: "ADD", value: 1 }
+    var myReduce = (state = initState, action) => {
+        if (action.type === "ADD") return { ...state, result: state.result + action.value }
+        return state
+    }
+
+    // action is an object, always contains type: ""
+
+    // combineReducers
+
+    // createStore
+    var store = createStore(myReduce)
+    var subscriber = () => console.log(store.getState().result)
+    var subscribe = store.subscribe(subscriber)
+    subscribe.unSubscribe()
+    store.dispatch(addAction)       // 1
+
+
     Object.keys(state)
         .filter(userId => action.userId !== userId)
         .reduce((prev, current) => {
