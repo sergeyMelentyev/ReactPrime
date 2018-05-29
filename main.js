@@ -779,7 +779,7 @@
     </div>
     }
 
-(rawStatePatterns) => {
+(rawPatterns) => {
     // container pattern, parrent with state, child with UI only
     export default class TestIncrementCounter extends React.Component {
         constructor(props) {
@@ -878,11 +878,12 @@
     <WithCount render={(count, increment) => <Counter count={count} onIncrement={increment} />} />
     }
 (flux) => {
-    // dispatcher obj, should be only one singleton, used to broadcast payloads to registered callbacks
+    // pattern for handling data in app
+    // create a dispatcher object, a big registry of callbacks
     import { Dispatcher } from "flux"
     export default new Dispatcher()
 
-    // actions functions
+    // actions, contains all of the possible state changes
     import AppDispatcher from "./AppDispatcher"
     export const updateCounterOnIncrement = (value) => {
         AppDispatcher.dispatch({ type: "INCREMENT_COUNTER", value })
@@ -894,7 +895,9 @@
         AppDispatcher.dispatch({ type: "RESET_COUNTER" })
     }
 
-    // store object, every store will receive every action
+    // store obj, can be multiple stores
+    // every store will receive all actions and filters out them
+    // cannot be modified directly
     import EventEmitter from "events"
     import AppDispatcher from "./AppDispatcher"
     let store = { count: 0 }
@@ -944,43 +947,33 @@
     }
     }
 (redux) => {
-    // one object with small combined reducers inside (several states)
-    // bind with react via react-redux lib
-    var initState = { result: 0 }
-    var addAction = { type: "ADD", value: 1 }
-    var myReduce = (state = initState, action) => {
-        if (action.type === "ADD") return { ...state, result: state.result + action.value }
-        return state
-    }
-
-    // action is an object, always contains type: ""
-
-    // combineReducers
-
-    // createStore
-    var store = createStore(myReduce)
-    var subscriber = () => console.log(store.getState().result)
-    var subscribe = store.subscribe(subscriber)
-    subscribe.unSubscribe()
-    store.dispatch(addAction)       // 1
+    // actions, contains all of the possible state changes
 
 
-    Object.keys(state)
-        .filter(userId => action.userId !== userId)
-        .reduce((prev, current) => {
-            prev[current] = state[current]
-            return prev
-        }, {})
+    // reducer, state change logic, copy state and make all changes on copy
+    // child reducers pass their copies back to root reducer,
+    // which combined all together into new state obj
+
+
+    // store obj, can be only one store, isn’t manipulated directly
+
+
+    // view layer (connect via react-redux): smart and dumb components
+    // smart are in charge of the actions (styless comp)
+    // dumb trigger an action via passed callback as props (styled comp with DOM elems) 
     }
 (redux_thunk) => {
-    //
+    // middleware to handle asynchronous actions in redux
     }
 (redux_saga) => {
+    // middleware to handle asynchronous actions in redux
+    }
+(mobx) => {
+    // state management lib
+    }
+(contextAPI) => {
     //
     }
-(redux_mobx) => {
-    //
-}
 
 (xrhRequest) => {
     // api.js
