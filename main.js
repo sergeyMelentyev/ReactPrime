@@ -1,4 +1,4 @@
-(jsx) => {
+jsx => {
     // JSX type can't be an expression
     // logical if statement and for loop are not expressions, can’t be used in JSX type
     // if no value is passed for a prop, it defaults to true
@@ -91,14 +91,14 @@
     }
     }
 
-(element) => {
+element => {
     const elem = React.createElement("div", {"className": "name"},
         React.createElement("p", null, "Hello, World"))
     const elem = <p className="name">"pass children to render"</p>   // the same as above
 
     ReactDOM.render(elem, document.getElementById("root"))
     }
-(props) => {
+props => {
     // one level deep
     class App extends React.Component {
         render() {
@@ -146,13 +146,13 @@
     }
     }
 
-(lifeCycle) => {
+lifeCycle => {
     componentDidMount() {...}       // after component output has been rendered to the DOM
     componentWillUnmount() {...}
     shouldComponentUpdate(nextProps, nextState) {...}
     }
 
-(setState) => {
+setState => {
     // passing object as an arg to setState
     this.setState({ count: ++this.state.count });
 
@@ -170,7 +170,7 @@
         counter: prevState.counter + props.increment
     }))
     }
-(classComponent) => {
+classComponent => {
     // CLASS COMPONENT WITH STATE
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -224,7 +224,7 @@
         }
     }
     }
-(functionalComponent) => {
+functionalComponent => {
     // stateless with only props down
     function FunctionalComponent(props) {
         return <li>Hello, {props.name}</li>
@@ -271,7 +271,11 @@
         }
     }
     }
-(slots) => {
+composeComponents => {
+    import compose from 'recompose/compose'
+    export default compose(withRouter, withStyles(styles))(Layout)
+    }
+slots => {
     // the same as slots in vue.js, can contain multiple injection points
     function FancyBorder(props) {
       return (
@@ -290,15 +294,32 @@
     }
     }
 
-(style) => {
-    // via global import
-    import "./style/app.css";
-
-    // inline jsx style
-    <li style={tab === this.state.currentTab ? { fontWeight: "bold"} : null} />
+timer => {
+    state = { timerId: null,counter: 5 }
+    componentDidMount() {
+        const timerId = setInterval(this.decrementCounter, 1000)
+        this.setState({ timerId })
+    }
+    componentWillUnmount() { clearInterval(this.state.timerId) }
+    decrementCounter = () => {
+        if (this.state.counter === 0) { this.navigateToHome(); return void 0 }
+        this.setState((prevState) => ({ counter: prevState.counter - 1 }))
+    }
     }
 
-(event) => {
+style => {
+    import { withStyles } from 'material-ui/styles'
+    const styles = () => ({
+      content: { flexGrow: 1 }
+    })
+    render() {
+        const { classes } = this.props
+        <div className={classes.content} />
+    }
+    export default withStyles(styles)(CompName)
+    }
+
+event => {
     // handle click with or without .bind()
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -426,7 +447,7 @@
         }
     }
     }
-(conditionRendering) => {
+conditionRendering => {
     function Greeting(props) {
         if (props.isLoggedIn) return <h1>Hello, User</h1>
         return <h1>Hello, Guest</h1>
@@ -473,7 +494,7 @@
         )
     }
     }
-(listRendering) => {
+listRendering => {
     // without component
     const numbers = [1,2,3,4,5]
     const listItemsFirst = numbers.map((item,key) => React.createElement("li", {key: key}, item))
@@ -489,7 +510,7 @@
     const numbers = [1,2,3,4,5]
     ReactDOM.render(<CreateNumbers numbers={numbers} />, document.getElementById("root"))
     }
-(form) => {
+form => {
     // submit, textarea and select handler
     class NameForm extends React.Component {
         constructor(props) {
@@ -609,7 +630,7 @@
         }
     }
     }
-(filter) => {
+filter => {
     // simple filtering via state value
     export default class TestItems extends React.Component {
         constructor(props) {
@@ -651,7 +672,7 @@
         }
     }
     }
-(ref) => {
+ref => {
     // ref callback receives the underlying DOM element as its argument
     // invoked before componentDidMount() or componentDidUpdate() lifecycle hooks
     submitMethod() {
@@ -728,20 +749,15 @@
     }
     }
 
-(router) => {
+router => {
     // index.js file
-    import {BrowserRouter, Route} from "react-router-dom"
-    const App = () => (
-        <BrowserRouter>
-            <div>
-                <Route exact path="/" component={Landing} />
-                <Route path="/search" component={Search} />
-            </div>
-        </BrowserRouter>
-    )
-
+    <BrowserRouter>
+        <div>
+            <Route exact path="/" component={Landing} />
+            <Route path="/search" component={Search} />
+        </div>
+    </BrowserRouter>
     // second.js
-    import {Link, NavLink} from "react-router-dom"
     const Landing = () => (
         <div>
             <Link to="/search">show all</Link>
@@ -750,25 +766,22 @@
     )
 
     // switch component will render exactly one component
-    import { BrowserRouter, Route, Switch } from "react-router-dom"
-    const App = () => (
-        <BrowserRouter>
-            <div>
-                <Switch>
-                    <Route exact path="/" component={Landing} />
-                    <Route path="/search" component={Search} />
-                    <Route component={FallBack404Component} />
-                </Switch>
-            </div>
-        </BrowserRouter>
-    )
+    <BrowserRouter>
+        <div>
+            <Switch>
+                <Route exact path="/" component={Landing} />
+                <Route path="/search" component={Search} />
+                <Route component={FallBack404Component} />
+            </Switch>
+        </div>
+    </BrowserRouter>
 
-    // pass props
+    // pass dynamic props down to child component
     const Child = ({match}) => (
         <div>
             <p>{match.params.id}</p>
         </div>
-    );
+    )
     <div>
         <h1>Accounts</h1>
         <ul>
@@ -779,7 +792,20 @@
     </div>
     }
 
-(rawPatterns) => {
+    // create routes dynamicaly
+    items.map((item) => {
+        return (
+            <Route path={`/${item.path}`}
+                   key={item.value}
+                   render={(props) => {
+                     const { component: Component} = item;
+                     return <Component {...props} activeHost={activeHost} />
+                   }}
+            />
+        )
+    })
+
+rawPatterns => {
     // container pattern, parrent with state, child with UI only
     export default class TestIncrementCounter extends React.Component {
         constructor(props) {
@@ -877,7 +903,7 @@
     }
     <WithCount render={(count, increment) => <Counter count={count} onIncrement={increment} />} />
     }
-(flux) => {
+flux => {
     // pattern for handling data in app
     // create a dispatcher object, a big registry of callbacks
     import { Dispatcher } from "flux"
@@ -946,7 +972,7 @@
         }
     }
     }
-(redux) => {
+redux => {
     // actions, contains all of the possible state changes
 
 
@@ -962,20 +988,20 @@
     // smart are in charge of the actions (styless comp)
     // dumb trigger an action via passed callback as props (styled comp with DOM elems) 
     }
-(redux_thunk) => {
+redux_thunk => {
     // middleware to handle asynchronous actions in redux
     }
-(redux_saga) => {
+redux_saga => {
     // middleware to handle asynchronous actions in redux
     }
-(mobx) => {
+mobx => {
     // state management lib
     }
-(contextAPI) => {
+contextAPI => {
     //
     }
 
-(xrhRequest) => {
+xrhRequest => {
     // api.js
     function getUserData(user) {
         return axios.all([
@@ -1011,7 +1037,7 @@
     }
     }
 
-(modules) => {
+modules => {
     // index.js
     var React = require("react")
     var ReactDOM = require("react-dom")
