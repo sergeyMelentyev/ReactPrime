@@ -295,7 +295,7 @@ slots => {
     }
 
 timer => {
-    state = { timerId: null,counter: 5 }
+    state = { timerId: null, counter: 5 }
     componentDidMount() {
         const timerId = setInterval(this.decrementCounter, 1000)
         this.setState({ timerId })
@@ -315,6 +315,7 @@ style => {
     render() {
         const { classes } = this.props
         <div className={classes.content} />
+        <div className={`${uuidInputIsDisabled ? classes.className : ''}`} />
     }
     export default withStyles(styles)(CompName)
     }
@@ -1001,7 +1002,7 @@ contextAPI => {
     //
     }
 
-xrhRequest => {
+xhrRequest => {
     // api.js
     function getUserData(user) {
         return axios.all([
