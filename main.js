@@ -10,6 +10,14 @@ jsx => {
     const list = numbers.map(item => React.createElement("li", {key: item.id}, item))
     const list = numbers.map(item => <li key={item.id}>{item}</li>)
 
+    // return multiple elements
+    return (
+        <React.Fragment>
+            <h1 />
+            <div />
+        </React.Fragment>
+    );
+
     // quotes for string vals or curly braces for expressions
     const element = <div tabIndex='0' />          // the same as <div tabIndex={'0'}>
     const element = <div autocomplete />        // the same as <div autocomplete={true} />
@@ -321,6 +329,13 @@ style => {
     }
 
 event => {
+    // pass data-set value
+    <Button data-name="holidays" onClick={this.handleTabChange} />
+    handleTabChange = (event: React.MouseEvent<HTMLElement>): void => {
+        const { name } = event.currentTarget.dataset;
+    }
+
+
     // handle click with or without .bind()
     class ClassComponent extends React.Component {
         constructor(props) {
@@ -974,20 +989,7 @@ flux => {
     }
     }
 redux => {
-    // actions, contains all of the possible state changes
-
-
-    // reducer, state change logic, copy state and make all changes on copy
-    // child reducers pass their copies back to root reducer,
-    // which combined all together into new state obj
-
-
-    // store obj, can be only one store, isn’t manipulated directly
-
-
-    // view layer (connect via react-redux): smart and dumb components
-    // smart are in charge of the actions (styless comp)
-    // dumb trigger an action via passed callback as props (styled comp with DOM elems) 
+    //
     }
 redux_thunk => {
     // middleware to handle asynchronous actions in redux
@@ -1060,3 +1062,179 @@ modules => {
     }
     module.exports = App
     }
+
+HOC => {
+    const sortByTimePublished = (item: Proto.TxNews.NewsItem):number => (
+      timeToMilliSeconds(item.getTimePublished())
+    );
+
+    interface Props {}
+
+    interface ChildProps {
+      getHistory(): void;
+    }
+
+    export interface IStateProps {
+      news: Proto.TxNews.NewsItem[];
+      newsRequestError: boolean;
+      newsRequestPending: boolean;
+    }
+
+    const connectNews = (ChildComponent: React.ComponentType<ChildProps>) => (
+      connect(null, null)(class ConnectNews extends Component<Props, IStateProps> {
+        state: IStateProps;
+        private service: NewsService;
+        private historyStream: GRPCRequest<
+          Proto.TxNews.GetHistoryItemsRequest, Proto.TxNews.GetHistoryItemsResponse> | null = null;
+        private subscribeStream: GRPCRequest<
+          Proto.TxNews.GetHistoryItemsRequest, Proto.TxNews.GetHistoryItemsResponse> | null = null;
+        private removeConnectionListener: any;
+        private news: Map<number, Proto.TxNews.NewsItem> = new Map();
+
+        constructor(props: Props) {
+          super(props);
+
+          this.state = {
+            news: [],
+            newsRequestError: false,
+            newsRequestPending: false,
+          };
+
+          this.service = newsService.getInstance();
+        }
+
+        componentDidMount() {
+          this.subscribe().catch(this.handleError);
+          this.removeConnectionListener = addConnectionListener(
+            'news',
+            this.unsubscribe,
+            this.subscribe,
+          );
+        }
+
+        componentWillUnmount() {
+          this.unsubscribe();
+          this.removeConnectionListener();
+        }
+
+        subscribe = async () => {
+          const subscribeRequest: Types.INewsSubscribeRequest = {
+            onError: this.handleError,
+            onMessage: this.handleMessage,
+            type: Proto.TxNews.ContentType.CONTENT_HTML,
+          };
+
+          try {
+            this.getHistory();
+            this.subscribeStream = await this.service.subscribe(subscribeRequest);
+          } catch (error) {
+            logger.error(`subscribe failed: ${error}`);
+            this.setState({ newsRequestError: error });
+          }
+        };
+
+        getHistory = () => {
+          const { newsRequestPending } = this.state;
+
+          if (newsRequestPending) {
+            return;
+          }
+          this.setState({ newsRequestPending: true }, async () => {
+            const historyRequest: Types.INewsHistoryRequest = {
+              onError: this.handleError,
+              onMessage: this.handleMessage,
+              pageRange: this.buildPageRange(),
+              type: Proto.TxNews.ContentType.CONTENT_HTML,
+            };
+
+            try {
+              this.historyStream = await this.service.getHistory(historyRequest);
+            } catch (error) {
+              logger.error(`getHistory failed: ${error}`);
+              this.setState({ newsRequestError: error });
+            }
+          });
+        };
+
+        buildPageRange = (): Proto.PageRange => {
+          const { news } = this.state;
+
+          const pageRange = new Proto.PageRange();
+          pageRange.setLimit(CHUNK_SIZE_FOR_LAZY_LOADING);
+          if (news.length) {
+            const oldestNews = news[news.length - 1];
+            pageRange.setStart(oldestNews.getTimePublished());
+          }
+          return pageRange;
+        };
+
+        handleMessage = (payload: Proto.TxNews.NewsItem[]) => (
+          this.setState({
+            newsRequestPending: false,
+            news: [...this.buildNextState(payload)],
+          })
+        );
+
+        handleError = (error: any) => {
+          logger.error(error);
+          this.setState({ newsRequestError: error });
+        };
+
+        buildNextState = (
+          payload: Proto.TxNews.NewsItem[],
+        ): Proto.TxNews.NewsItem[] => {
+          payload.forEach(entry => this.news.set(entry.getId(), entry));
+          return (
+            sortBy<Proto.TxNews.NewsItem>(Array.from(this.news.values()), sortByTimePublished).reverse()
+          );
+        };
+
+        unsubscribe = () => {
+          logger.log('disconnecting');
+          if (this.historyStream) {
+            this.historyStream.abort();
+            this.historyStream = null;
+          }
+          if (this.subscribeStream) {
+            this.subscribeStream.abort();
+            this.subscribeStream = null;
+          }
+          this.news.clear();
+          this.setState({
+            news: [],
+            newsRequestError: false,
+            newsRequestPending: false,
+          });
+        };
+
+        render() {
+          return (
+            <ChildComponent {...this.state} {...this.props} getHistory={this.getHistory} />
+          );
+        }
+      })
+    );
+
+    export default connectNews;
+
+    export default compose<Props, {}>(
+      connectStore,
+      connectNews,
+      withLocale,
+      withStyles(styles),
+    )(TxNews);
+
+    const mapStateToProps = ({
+      aside,
+      user,
+    }: AppState) => ({
+      personId: user.personId,
+      deviceLocalId: user.deviceLocalId,
+      asideVisible: aside.visible,
+    });
+    const mapDispatchToProps = {
+      setActiveIssueAndChangeLayout,
+    };
+    export default connect(mapStateToProps, mapDispatchToProps);
+
+}
